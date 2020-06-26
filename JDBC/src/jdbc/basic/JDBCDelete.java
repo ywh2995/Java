@@ -1,0 +1,68 @@
+package jdbc.basic;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Scanner;
+
+public class JDBCDelete {
+
+	public static void main(String[] args) {
+		
+		//회원 아이디를 받아서 해당 아이디를 삭제하는 JDBC코드를 완성.
+		Scanner scan = new Scanner(System.in);
+		
+		System.out.println("수정할 아이디를 입력하세요>");
+		String id = scan.next();
+		
+		System.out.println("수정할 이름>");
+		String name = scan.next();
+		System.out.println("수정할 이메일>");
+		String email = scan.next();
+		System.out.println("수정할 주소>");
+		String address = scan.next();
+		
+		//1. DB연동에 필요한 변수 선언
+		String url = "jdbc:oracle:thin:@localhost:1521/XEPDB1";
+		String uid = "TEST01";
+		String upw = "TEST01";
+		
+		String sql = "update member01 set name = ?, email = ?, address = ? where id = ?";
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			//2. JDBC드라이버 호출
+			Class.forName("oracle.jdbc.driver.OracleDriver");
+			
+			//3. 커넥션 생성
+			conn = DriverManager.getConnection(url, uid, upw);
+			
+			//4. SQL문 전달 객체 pstmt생성
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, name);
+			pstmt.setString(2, email);
+			pstmt.setString(3, address);
+			pstmt.setString(4, id);
+			
+			//5. sql문 실행
+			int result = pstmt.executeUpdate();
+			
+			if(result == 1) {
+				System.out.println("회원 아이디가 정상 수정되었습니다.");
+			} else {
+				System.out.println(id + "를 확인하세요.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if(conn != null) conn.close();
+				if(pstmt != null) pstmt.close();
+			} catch (Exception e2) {
+				
+			}
+		}
+	}
+}
